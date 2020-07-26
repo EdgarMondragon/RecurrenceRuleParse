@@ -6,7 +6,7 @@ using System.Text;
 
 namespace RecurrenceRuleParse
 {
-	public class RecurrenceParse
+	public static class RecurrenceParse
 	{
 		#region Internal Fields
 
@@ -38,9 +38,15 @@ namespace RecurrenceRuleParse
 		#endregion
 
 		#region Methods
-
-		public IEnumerable<DateTime> GetRecurrenceDateTimeCollection(string RRule, DateTime RecStartDate)
+		/// <summary>
+		/// Pass the recurrencerule string and the start date of the appointment to this method that will return the dates collection based on the recurrence rule
+		/// </summary>
+		/// <param name="RRule"> string value</param>
+		/// <param name="RecStartDate"> DateTime value</param>
+		/// <returns></returns>
+		public static IEnumerable<DateTime> GetRecurrenceDateTimeCollection(string RRule, DateTime RecStartDate)
 		{
+			RRule = RRule.Replace("\n", ";");
 			var RecDateCollection = new List<DateTime>();
 			DateTime startDate = RecStartDate;
 			var ruleSeperator = new[] { '=', ';', ',' };
@@ -56,7 +62,7 @@ namespace RecurrenceRuleParse
 				int recCount;
 				int.TryParse(RECCOUNT, out recCount);
 
-				#region DAILY
+				#region HOURLY
 
 				if (HOURLY == "HOURLY")
 				{
@@ -88,6 +94,8 @@ namespace RecurrenceRuleParse
 						}
 					}
 				}
+				#endregion
+				#region DAILY
 				else if (DAILY == "DAILY")
 				{
 

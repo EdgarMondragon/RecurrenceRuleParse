@@ -1,0 +1,13 @@
+
+RecurrenceRuleParse/Properties/PublishProfiles/FolderProfile.pubxml
+
+RecurrenceRuleParse/bin/Release/netcoreapp2.2/publish/
+
+RecurrenceRuleParse/bin/Release/
+
+RecurrenceRuleParse/obj/Release/
+
+.vs/RecurrenceRuleParse/
+
+
+RecurrenceRuleParse/obj/
