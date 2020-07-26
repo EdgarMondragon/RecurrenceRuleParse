@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>DF.IAR.RecurrenceRuleParse</PackageId>
+    <Authors>Edgar Mondragon</Authors>
+    <Company>Definity First</Company>
+    <Product>DF.IAR.RecurrenceRuleParse</Product>
+    <Description>Parse recurrence rule</Description>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
+    <Version>1.0.2</Version>
+  </PropertyGroup>
+
+</Project>
