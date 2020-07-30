@@ -452,6 +452,164 @@ namespace RecurrenceRuleParse
 			return RecDateCollection.Except(exDateList).ToList();
 		}
 
+		public static EventRecurrenceSchema GetRecurrenceSchema(string RRule)
+		{
+			EventRecurrenceSchema eventRecurrenceSchema = new EventRecurrenceSchema();
+			RRule = RRule.Replace("\n", ";");
+			var ruleSeperator = new[] { '=', ';', ',' };
+			var weeklySeperator = new[] { ';' };
+			string[] ruleArray = RRule.Split(ruleSeperator);
+			FindKeyIndex(ruleArray);
+			string[] weeklyHourlyRule = RRule.Split(weeklySeperator);
+			FindWeeklyRule(weeklyHourlyRule);
+			FindExdateList(weeklyHourlyRule);
+			eventRecurrenceSchema.ExcludeDates = string.Join(",", exDateList);
+			if (ruleArray.Length != 0 && RRule != "")
+			{
+				int recCount = 0;
+				int.TryParse(RECCOUNT, out recCount);
+				eventRecurrenceSchema.End.Ocurrences = recCount;
+				eventRecurrenceSchema.End.EndDate = UNTIL;
+				#region HOURLY
+
+				if (HOURLY == "HOURLY")
+				{
+					int HyDayGap = ruleArray.Length == 4 ? 1 : int.Parse(INTERVALCOUNT);
+					eventRecurrenceSchema.SchemaType = SchemaType.Hour;
+					eventRecurrenceSchema.Hour.EveryHour = HyDayGap;
+				}
+				#endregion
+				#region DAILY
+				else if (DAILY == "DAILY")
+				{
+					eventRecurrenceSchema.SchemaType = SchemaType.Day;
+					if ((ruleArray.Length > 4 && INTERVAL == "INTERVAL") || ruleArray.Length == 4)
+					{
+						int DyDayGap = ruleArray.Length == 4 ? 1 : int.Parse(INTERVALCOUNT);
+						eventRecurrenceSchema.Day.EveryDay = DyDayGap;
+						eventRecurrenceSchema.Day.IsEveryWeekDay = false;
+					}
+					if (ruleArray.Length > 4 && BYDAY == "BYDAY")
+					{
+						eventRecurrenceSchema.Day.IsEveryWeekDay = true;
+					}
+				}
+				#endregion
+
+				#region WEEKLY
+				else if (WEEKLY == "WEEKLY")
+				{
+					eventRecurrenceSchema.SchemaType = SchemaType.Week;
+					int WyWeekGap = ruleArray.Length > 4 && INTERVAL == "INTERVAL" ? int.Parse(INTERVALCOUNT) : 1;
+					bool isweeklyselected = weeklyHourlyRule[WEEKLYBYDAYPOS].Length > 6;
+					eventRecurrenceSchema.Week.EveryWeek = WyWeekGap;
+					if (isweeklyselected)
+					{
+						if (weeklyHourlyRule[WEEKLYBYDAYPOS].Contains("SU"))
+						{
+							eventRecurrenceSchema.Week.DaysOfTheWeek.Add((int)DayOfWeek.Sunday);
+						}
+						if (weeklyHourlyRule[WEEKLYBYDAYPOS].Contains("MO"))
+						{
+							eventRecurrenceSchema.Week.DaysOfTheWeek.Add((int)DayOfWeek.Monday);
+						}
+						if (weeklyHourlyRule[WEEKLYBYDAYPOS].Contains("TU"))
+						{
+							eventRecurrenceSchema.Week.DaysOfTheWeek.Add((int)DayOfWeek.Tuesday);
+						}
+						if (weeklyHourlyRule[WEEKLYBYDAYPOS].Contains("WE"))
+						{
+							eventRecurrenceSchema.Week.DaysOfTheWeek.Add((int)DayOfWeek.Wednesday);
+						}
+						if (weeklyHourlyRule[WEEKLYBYDAYPOS].Contains("TH"))
+						{
+							eventRecurrenceSchema.Week.DaysOfTheWeek.Add((int)DayOfWeek.Thursday);
+						}
+						if (weeklyHourlyRule[WEEKLYBYDAYPOS].Contains("FR"))
+						{
+							eventRecurrenceSchema.Week.DaysOfTheWeek.Add((int)DayOfWeek.Friday);
+						}
+						if (weeklyHourlyRule[WEEKLYBYDAYPOS].Contains("SA"))
+						{
+							eventRecurrenceSchema.Week.DaysOfTheWeek.Add((int)DayOfWeek.Saturday);
+						}
+					}
+				}
+				#endregion
+
+				#region MONTHLY
+				else if (MONTHLY == "MONTHLY")
+				{
+					eventRecurrenceSchema.SchemaType = SchemaType.Month;
+					int MyMonthGap = ruleArray.Length > 4 && INTERVAL == "INTERVAL" ? int.Parse(INTERVALCOUNT) : 1;
+
+					if (BYMONTHDAY == "BYMONTHDAY")
+					{
+						eventRecurrenceSchema.Month.DayMonth = int.Parse(BYMONTHDAYCOUNT);
+						eventRecurrenceSchema.Month.EveryMonth = MyMonthGap;
+						eventRecurrenceSchema.Month.IsEveryMonth = true;
+					}
+					else if (BYDAY == "BYDAY")
+					{
+						eventRecurrenceSchema.Month.IsEveryMonth = false;
+						eventRecurrenceSchema.Month.EveryMonth = MyMonthGap;
+						eventRecurrenceSchema.Month.MonthlyFrequency = int.Parse(BYSETPOSCOUNT) - 1;
+
+						var byDay = WEEKLYBYDAY.Split('=');
+						for (int i = 0; i < byDay.Length; i++)
+						{
+							if (byDay[i] == "BYDAY")
+							{
+								var days = byDay[i + 1];
+								if (days == "MO,TU,WE,TH,FR,SA,SU")
+								{
+									eventRecurrenceSchema.Month.MonthlyPeriod = 0;
+								}
+								if (days == "MO,TU,WE,TH,FR")
+								{
+									eventRecurrenceSchema.Month.MonthlyPeriod = 1;
+								}
+								if (days == "SA,SU")
+								{
+									eventRecurrenceSchema.Month.MonthlyPeriod = 2;
+								}
+								if (days == "SU")
+								{
+									eventRecurrenceSchema.Month.MonthlyPeriod = 3;
+								}
+								if (days == "MO")
+								{
+									eventRecurrenceSchema.Month.MonthlyPeriod = 4;
+								}
+								if (days == "TU")
+								{
+									eventRecurrenceSchema.Month.MonthlyPeriod = 5;
+								}
+								if (days == "WE")
+								{
+									eventRecurrenceSchema.Month.MonthlyPeriod = 6;
+								}
+								if (days == "TH")
+								{
+									eventRecurrenceSchema.Month.MonthlyPeriod = 7;
+								}
+								if (days == "FR")
+								{
+									eventRecurrenceSchema.Month.MonthlyPeriod = 8;
+								}
+								if (days == "SA")
+								{
+									eventRecurrenceSchema.Month.MonthlyPeriod = 9;
+								}
+							}
+						}
+					}
+				}
+				#endregion
+			}
+			return eventRecurrenceSchema;
+		}
+
 		private static void FindExdateList(string[] weeklyRule)
 		{
 			for (int i = 0; i < weeklyRule.Length; i++)
@@ -615,8 +773,6 @@ namespace RecurrenceRuleParse
 					BYMONTHCOUNT = ruleArray[i + 1].Trim();
 				}
 			}
-
-
 		}
 
 		private static void GetWeeklyDateCollection(DateTime addDate, string[] weeklyRule, List<DateTime> RecDateCollection)

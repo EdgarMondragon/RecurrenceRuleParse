@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>		
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>DF.IAR.RecurrenceRuleParse</PackageId>
     <Authors>Edgar Mondragon</Authors>
@@ -9,9 +9,14 @@
     <Product>DF.IAR.RecurrenceRuleParse</Product>
     <Description>Parse recurrence rule</Description>
     <PackageLicenseExpression></PackageLicenseExpression>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.0.3.0</FileVersion>
-    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.6.0</AssemblyVersion>
+    <FileVersion>1.0.6.0</FileVersion>
+    <Version>1.0.6</Version>
+    <PackageProjectUrl>https://github.com/EdgarMondragon/RecurrenceRuleParse</PackageProjectUrl>
   </PropertyGroup>
+	
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+    <Reference Include="System.Net" />
+  </ItemGroup>
 
 </Project>
